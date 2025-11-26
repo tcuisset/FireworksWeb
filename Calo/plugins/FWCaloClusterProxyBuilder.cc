@@ -240,7 +240,7 @@ void FWCaloClusterProxyBuilder::BuildItem(const reco::CaloCluster &iData,
         float centerX = (corners[6] + corners[6 + offset]) / 2;
         float centerY = (corners[7] + corners[7 + offset]) / 2;
         float radius = fabs(corners[6] - corners[6 + offset]) / 2;
-        hex_boxset->AddHex(REveVector(centerX, centerY, corners[2]), radius, 90.0, shapes[3]);
+        hex_boxset->AddHex(REveVector(centerX, centerY, corners[2]), radius, 0., shapes[3]); // removed rotation
         if (heatmap) {
           energy ? hex_boxset->DigitColor(fwhgcal::gradient[0][colorFactor], fwhgcal::gradient[1][colorFactor], fwhgcal::gradient[2][colorFactor])
                  : hex_boxset->DigitColor(64, 64, 64);

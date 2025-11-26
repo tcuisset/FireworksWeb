@@ -139,7 +139,9 @@ void FWCaloParticleProxyBuilder::BuildItem(const CaloParticle &iData, int idx, R
         float centerX = (corners[6] + corners[6 + offset]) / 2;
         float centerY = (corners[7] + corners[7 + offset]) / 2;
         float radius = fabs(corners[6] - corners[6 + offset]) / 2;
-        hex_boxset->AddHex(REveVector(centerX, centerY, corners[2]), radius, shapes[2], shapes[3]);
+        // hex_boxset->AddHex(REveVector(centerX, centerY, corners[2]), radius, shapes[2], shapes[3]);
+        hex_boxset->AddHex(REveVector(centerX, centerY, corners[2]), radius, 0., shapes[3]); // Set the angle to zero as it looks like the rotation is not centered on heaxagon center but rather around (0,0,0)
+        // Needs to be properly computed
         if (heatmap) {
           const uint8_t colorFactor = FWHGCAL_GRADIENT_STEPS * (fmin(m_hitmap.at(it.first)->energy() / saturation_energy, 1.0f));
           hex_boxset->DigitColor(fwhgcal::gradient[0][colorFactor], fwhgcal::gradient[1][colorFactor], fwhgcal::gradient[2][colorFactor]);
