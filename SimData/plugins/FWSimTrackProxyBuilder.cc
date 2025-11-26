@@ -199,7 +199,7 @@ void FWSimTrackProxyBuilder::addParticlesToPdgDataBase(void) {
   addParticlesToPdgDataBase();
 
   auto context = fireworks::Context::getInstance();
-  REveTrackPropagator* propagator = context->getTrackPropagator();
+  REveTrackPropagator* propagator = context->getMuonTrackPropagator(); // We need a propagator that goes beyond tracker boundary. TODO maybe use something else then muon
 
   edm::Handle<edm::SimVertexContainer> hitColl;
 
@@ -235,13 +235,32 @@ void FWSimTrackProxyBuilder::addParticlesToPdgDataBase(void) {
           if (iData.charge() == 0) {
             track->SetLineStyle(7);
           }
-          track->AddPathMark(REvePathMark(
-              REvePathMark::kReference,
-              REveVector(
-                  iData.trackerSurfacePosition().x(), iData.trackerSurfacePosition().y(), iData.trackerSurfacePosition().z()),
-              REveVector(iData.trackerSurfaceMomentum().px(),
-                          iData.trackerSurfaceMomentum().py(),
-                          iData.trackerSurfaceMomentum().pz())));
+          if (iData.crossedBoundary()) {
+            track->AddPathMark(REvePathMark(
+                REvePathMark::kReference,
+                REveVector(
+                    iData.getPositionAtBoundary().x(), iData.getPositionAtBoundary().y(), iData.getPositionAtBoundary().z()),
+                REveVector(iData.getMomentumAtBoundary().px(),
+                            iData.getMomentumAtBoundary().py(),
+                            iData.getMomentumAtBoundary().pz())));
+          }
+          // Finding "decay" vertices
+          bool hasAtLeastOneDecayVertex = false;
+          for(std::vector<SimVertex>::const_reverse_iterator it = hitColl->rbegin(); it != hitColl->rend(); ++it) {// assume the last vertex is the decay one
+            SimVertex const& daughterVtx = *it;
+            if (daughterVtx.parentIndex() == (int)iData.trackId()) {
+              if (hasAtLeastOneDecayVertex) {
+                std::cout << "Non-decay vertex " << daughterVtx << std::endl; // probably not needed
+              }
+              else {
+                track->AddPathMark(REvePathMark(
+                  REvePathMark::kDecay,
+                  REveVector(daughterVtx.position().x(), daughterVtx.position().y(), daughterVtx.position().z())
+                ));
+                hasAtLeastOneDecayVertex = true;
+              }
+            }
+          }
           track->MakeTrack();
           
           REveElement *itemHolder = GetHolder(product, index);
