@@ -37,7 +37,7 @@ class FWTracksterLayersProxyBuilder : public FWHeatmapProxyBuilderTemplate<ticl:
         item->getConfig()->assertParam("EnableTimeFilter", false);
         item->getConfig()->assertParam("TimeLowerBound(ns)", 0.01, 0.0, 75.0);
         item->getConfig()->assertParam("TimeUpperBound(ns)", 0.01, 0.0, 75.0);
-        item->getConfig()->assertParam("DisplayMode", 0.0, 0.0, 5.0);
+        item->getConfig()->assertParam("DisplayMode", 0L, 0L, 4L);
         item->getConfig()->assertParam("ProportionalityFactor", 1.0, 0.0, 1.0);
         FWHeatmapProxyBuilderTemplate::SetCollection(c);
     }
